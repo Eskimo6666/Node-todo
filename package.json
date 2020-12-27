@@ -6,6 +6,7 @@
   "author": "Eskimo <zhangfangyuan@myhexin.com>",
   "license": "MIT",
   "dependencies": {
-    "commander": "^6.2.0"
+    "commander": "^6.2.0",
+    "inquirer": "^7.3.3"
   }
 }
