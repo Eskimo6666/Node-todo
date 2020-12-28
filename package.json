@@ -1,6 +1,10 @@
 {
-  "name": "nodeTodo",
-  "version": "0.0.1",
+  "name": "handle-list",
+  "version": "0.0.3",
+  "bin":{
+    "td":"cli.js"
+  },
+  "files":["*.js"],
   "main": "index.js",
   "repository": "https://github.com/Eskimo6666/Node-todo.git",
   "author": "Eskimo <zhangfangyuan@myhexin.com>",

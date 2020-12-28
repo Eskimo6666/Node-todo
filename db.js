@@ -25,7 +25,7 @@ const db = {
   write(list, path = dbPath) {
     const string = JSON.stringify(list)
     return new Promise((resolve, reject) => {
-      fs.writeFile(path, string, (err3) => {
+      fs.writeFile(path, string + '\n', (err3) => {
         if (err3) {
           console.log(err3, '写文件出错')
           return reject(err3)
