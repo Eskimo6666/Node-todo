@@ -14,14 +14,76 @@ module.exports.clear = async (title) => {
   await db.write([])
 }
 
-module.exports.showAll = async () => {
-  //读取之前的任务
-  //打印之前的任务
-  const list = await db.read()
-  //   list.forEach((task, index) => {
-  //     console.log(`${task.done ? '[X]' : '[_]'}${index + 1}-${task.title}`)
-  //   })
+function markAsDone(list, index) {
+  list[index].done = true
+  db.write(list)
+}
 
+function markAsUnDone(list, index) {
+  list[index].done = false
+  db.write(list)
+}
+
+function remove(list, index) {
+  list.splice(index, 1)
+  db.write(list)
+}
+
+function updatetitle(list, index) {
+  inquirer
+    .prompt({
+      type: 'input',
+      name: 'newTitle',
+      message: '输入新名称',
+      default: list[index].title,
+    })
+    .then((answers2) => {
+      console.log('该哈哈哈')
+
+      list[index].title = answers2.newTitle
+      db.write(list)
+    })
+}
+
+function askForAction(list, index) {
+    const actions = {
+        markAsDone, markAsUnDone, remove, updatetitle
+    }
+  inquirer
+    .prompt({
+      type: 'list',
+      name: 'action',
+      message: '请选择操作',
+      choices: [
+        { name: '退出', value: 'quit' },
+        { name: '已完成', value: 'markAsDone' },
+        { name: '未完成', value: 'markAsUnDone' },
+        { name: '删除', value: 'remove' },
+        { name: '改标题', value: 'edit' },
+      ],
+    })
+    //根据所选操作做事情
+    .then((ans) => {
+      const action = actions[ans.action]
+      action && action(list, index)
+    })
+}
+
+function askForCreatTask(list) {
+  inquirer
+    .prompt({
+      type: 'input',
+      name: 'newTitle',
+      message: '名称',
+    })
+    .then((ans3) => {
+      list.push({ title: ans3.newTitle, done: false })
+      db.write(list)
+    })
+  //创建任务
+}
+
+function pritnTasks(list) {
   inquirer
     .prompt({
       type: 'list',
@@ -35,70 +97,26 @@ module.exports.showAll = async () => {
         { name: '创建', value: '-2' },
       ],
     })
+    //询问操作
     .then((answers) => {
       console.log(answers.index)
       let index = parseInt(answers.index)
       if (index >= 0) {
         //选择了一个任务
-        inquirer
-          .prompt({
-            type: 'list',
-            name: 'action',
-            message: '请选择操作',
-            choices: [
-              { name: '退出', value: 'quit' },
-              { name: '已完成', value: 'markAsDone' },
-              { name: '未完成', value: 'markAsUnDone' },
-              { name: '删除', value: 'remove' },
-              { name: '改标题', value: 'edit' },
-            ],
-          })
-          .then((ans) => {
-            console.log(ans)
-            switch (ans.action) {
-              case 'markAsDone':
-                list[index].done = true
-                db.write(list)
-                break
-              case 'markAsUnDone':
-                list[index].done = false
-                db.write(list)
-                break
-              case 'remove':
-                list.splice(index, 1)
-                db.write(list)
-                break
-              case 'edit':
-                inquirer
-                  .prompt({
-                    type: 'input',
-                    name: 'newTitle',
-                    message: '输入新名称',
-                    default: list[index].title,
-                  })
-                  .then((answers2) => {
-                      console.log('该哈哈哈');
-                      
-                    list[index].title = answers2.newTitle
-                    db.write(list)
-                  })
-                break
-              default:
-                break
-            }
-          })
+        askForAction(list, index)
       } else if (index == -2) {
-        inquirer
-          .prompt({
-            type: 'input',
-            name: 'newTitle',
-            message: '名称',
-          })
-          .then((ans3) => {
-            list.push({ title: ans3.newTitle, done: false })
-            db.write(list)
-          })
-        //创建任务
+        askForCreatTask(list)
       }
     })
+}
+
+module.exports.showAll = async () => {
+  //读取之前的任务
+  //打印之前的任务
+  const list = await db.read()
+  //   list.forEach((task, index) => {
+  //     console.log(`${task.done ? '[X]' : '[_]'}${index + 1}-${task.title}`)
+  //   })
+  //打印之前的任务
+  pritnTasks(list)
 }
